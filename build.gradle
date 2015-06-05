@@ -1,0 +1,51 @@
+plugins {
+    id "ajk.gradle.elastic" version "0.0.2"
+}
+
+apply plugin: 'java'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    testCompile "junit:junit:4.12"
+    testCompile "commons-io:commons-io:2.4"
+}
+
+task integrationTests(type: Test) {
+    reports {
+        html.destination "$buildDir/reports/integration-tests"
+    }
+
+    include "**/*IT.*"
+
+    doFirst {
+        startElastic {
+            elasticVersion = "1.5.2"
+            httpPort = 9200
+            transportPort = 9300
+            dataDir = file("$buildDir/elastic")
+            logsDir = file("$buildDir/elastic/logs")
+        }
+    }
+
+    doLast {
+        stopElastic {
+            httpPort = 9200
+        }
+    }
+}
+
+gradle.taskGraph.afterTask { Task task, TaskState taskState ->
+    if (task.name == "integrationTests") {
+        stopElastic {
+            httpPort = 9200
+        }
+    }
+}
+
+test {
+    include '**/*Test.*'
+    exclude '**/*IT.*'
+}
