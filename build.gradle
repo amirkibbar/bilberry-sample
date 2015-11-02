@@ -1,5 +1,5 @@
 plugins {
-    id "ajk.gradle.elastic" version "0.0.2"
+    id "ajk.gradle.elastic" version "0.0.6"
 }
 
 apply plugin: 'java'
@@ -22,7 +22,7 @@ task integrationTests(type: Test) {
 
     doFirst {
         startElastic {
-            elasticVersion = "1.5.2"
+            elasticVersion = "2.0.0"
             httpPort = 9200
             transportPort = 9300
             dataDir = file("$buildDir/elastic")
